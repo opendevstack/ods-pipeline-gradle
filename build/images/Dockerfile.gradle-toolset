@@ -40,5 +40,11 @@ ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/master/build/pac
 COPY build/images/scripts/build.sh /usr/local/bin/build-gradle
 COPY build/images/scripts/configure-gradle.sh /usr/local/bin/configure-gradle
 COPY build/images/scripts/configure-truststore.sh /usr/local/bin/configure-truststore
+RUN chmod a+rx /usr/local/bin/build-gradle && \
+    chmod a+rx /usr/local/bin/cache-build && \
+    chmod a+rx /usr/local/bin/copy-build-if-cached && \
+    chmod a+rx /usr/local/bin/copy-artifacts && \
+    chmod a+rx /usr/local/bin/configure-gradle && \
+    chmod a+rx /usr/local/bin/configure-truststore
 
 USER 1001
