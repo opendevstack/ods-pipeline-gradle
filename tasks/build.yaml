@@ -80,9 +80,9 @@ spec:
     - description: The cache location that the build task used. If caching is not enabled this will be an empty string.
       name: build-reused-from-location
   steps:
-    - name: build-gradle-binary
-      # Image is built from build/package/Dockerfile.gradle-toolset.
-      image: 'ghcr.io/opendevstack/ods-pipeline/ods-gradle-toolset:0.13.2'
+    - name: build-gradle
+      # Image is built from build/images/Dockerfile.gradle-toolset.
+      image: 'ghcr.io/opendevstack/ods-pipeline-gradle/gradle-toolset:latest'
       env:
         - name: DEBUG
           valueFrom:
