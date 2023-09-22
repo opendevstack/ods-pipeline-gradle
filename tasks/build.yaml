@@ -1,14 +1,14 @@
 # File is generated; DO NOT EDIT.
 
 apiVersion: tekton.dev/v1beta1
-kind: 'Task'
+kind: Task
 metadata:
-  name: 'ods-pipeline-gradle-build'
+  name: ods-pipeline-gradle-build
 spec:
   description: |
-    Builds Go applications.
+    Builds Gradle applications and libraries.
 
-    See https://github.com/opendevstack/ods-pipeline-gradle/blob/vlatest/docs/build.adoc
+    See https://github.com/opendevstack/ods-pipeline-gradle/blob/vlatest/docs/tasks/build.adoc
   params:
     - name: working-dir
       description: |
@@ -16,21 +16,29 @@ spec:
         without leading `./` and trailing `/`.
       type: string
       default: "."
-    - name: enable-cgo
-      description: Whether to enable CGO. When not enabled the build will set `CGO_ENABLED=0`.
+    - name: gradle-additional-tasks
+      description: >-
+        Additional gradle tasks to be passed to the gradle build. (default tasks called are `clean` and `build`).
       type: string
-      default: "false"
-    - name: go-os
-      description: "`GOOS` variable (the execution operating system such as `linux`, `windows`)."
+      default: ""
+    - name: gradle-options
+      description: >-
+        Options to be passed to the gradle build.
+        (See ref: https://docs.gradle.org/7.4.2/userguide/command_line_interface.html#sec:command_line_debugging)
       type: string
-      default: "linux"
-    - name: go-arch
-      description: "`GOARCH` variable (the execution architecture such as `arm`, `amd64`)."
+      default: "--no-daemon --stacktrace"
+    - name: gradle-opts-env
+      description: >-
+        Will be exposed to the build via `GRADLE_OPTS` environment variable.
+        Specifies JVM arguments to use when starting the Gradle client VM. The client VM only handles command line input/output, so it is rare that one would need to change its VM options.
+        You can still use this to change the settings for the Gradle daemon which runs the actual build by setting the according Gradle properties by `-D`.
+        If you want to set the JVM arguments for the actual build you would do this via `-Dorg.gradle.jvmargs=-Xmx1024M`
+        (See ref: https://docs.gradle.org/7.4.2/userguide/build_environment.html#sec:gradle_configuration_properties).
       type: string
-      default: "amd64"
+      default: "-Dorg.gradle.jvmargs=-Xmx512M"
     - name: output-dir
       description: >-
-        Path to the directory into which the resulting Go binary should be copied, relative to `working-dir`.
+        Path to the directory into which the resulting Java application jar should be copied, relative to `working-dir`.
         This directory may then later be used as Docker context for example.
       type: string
       default: docker
@@ -41,72 +49,103 @@ spec:
         You must set this to `"false"` if the build can be affected by files outside `working-dir`. See ADR caching-build-tasks for more details and workarounds.
       type: string
       default: "true"
+    - name: build-extra-inputs
+      description: >-
+        List of build source directories (as colon separated string) which in addition working-dir influence the build.
+        These directories are relative to the repository root.
+        If the contents in these directories change the cache is invalidated so that the build task will rebuild from scratch.
+      type: string
+      default: ""
+    - name: cached-outputs
+      description: >-
+        List of build output directories (as colon separated string) to be cached.
+        These directories are relative to `working-dir`.
+      type: string
+      default: "docker"
     - name: build-script
       description: >-
         Build script to execute. The
-        link:https://github.com/opendevstack/ods-pipeline-gradle/blob/main/build/images/scripts/go-build.sh[default script]
+        link:https://github.com/opendevstack/ods-pipeline-gradle/blob/main/build/package/scripts/build.sh[default script]
         is located in the container image. If you specify a relative path
         instead, it will be resolved from the workspace. See the task definition
         for details how the build script is invoked.
       type: string
-      default: "/usr/local/bin/go-build"
-    - name: pre-test-script
-      description: Script to execute before running tests, relative to the working directory.
+      default: "/usr/local/bin/build-gradle"
+    - name: gradle-build-dir
+      description: >-
+        Path to the directory into which Gradle publishes its build.
       type: string
-      default: ""
+      default: build
   results:
     - description: The cache location that the build task used. If caching is not enabled this will be an empty string.
       name: build-reused-from-location
   steps:
-    - name: go-build
-      # Image is built from build/images/Dockerfile.gradle-toolset.
-      image: 'ghcr.io/opendevstack/ods-pipeline-gradle/gradle-toolset:latest'
+    - name: build-gradle-binary
+      # Image is built from build/package/Dockerfile.gradle-toolset.
+      image: 'ghcr.io/opendevstack/ods-pipeline/ods-gradle-toolset:0.13.2'
       env:
-        - name: HOME
-          value: '/tekton/home'
-        - name: CI
-          value: "true"
         - name: DEBUG
           valueFrom:
             configMapKeyRef:
               key: debug
               name: ods-pipeline
+        - name: HOME
+          value: '/tekton/home'
+        - name: CI
+          value: "true"
+        - name: GRADLE_OPTS
+          value: "$(params.gradle-opts-env)"
+        - name: NEXUS_URL
+          valueFrom:
+            configMapKeyRef:
+              key: url
+              name: ods-nexus
+        - name: NEXUS_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: ods-nexus-auth
+        - name: NEXUS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: ods-nexus-auth
+      resources:
+        {}
       script: |
         echo -n "" > $(results.build-reused-from-location.path)
-        cache_build_key=go-$(params.go-os)-$(params.go-arch)
+        cache_build_key=gradle
         if copy-build-if-cached \
-          --cache-build=$(params.cache-build) \
           --cache-build-key="$cache_build_key" \
+          --build-extra-inputs=$(params.build-extra-inputs) \
+          --cached-outputs=$(params.cached-outputs) \
           --cache-location-used-path=$(results.build-reused-from-location.path) \
           --working-dir=$(params.working-dir) \
-          --output-dir=$(params.output-dir) \
           --debug=${DEBUG} ; then
           exit 0
         fi
-        # Default build script is build/images/scripts/go-build.sh.
-        set +e 
+        # Default build script is build/package/scripts/build-gradle.sh.
+        set +e
         $(params.build-script) \
           --working-dir=$(params.working-dir) \
-          --enable-cgo=$(params.enable-cgo) \
-          --go-os=$(params.go-os) \
-          --go-arch=$(params.go-arch) \
-          --pre-test-script=$(params.pre-test-script) \
           --output-dir=$(params.output-dir) \
-          --debug=${DEBUG}
+          --gradle-build-dir=$(params.gradle-build-dir) \
+          --gradle-additional-tasks="$(params.gradle-additional-tasks)" \
+          --gradle-options="$(params.gradle-options)"
         build_exit=$?
         set -e
         copy-artifacts --debug=${DEBUG}
         if [ $build_exit -ne 0 ]; then
           exit $build_exit
         fi
-        if [ "$(params.cache-build)" == "true" ]; then
-          cache-build \
-            --cache-build-key="$cache_build_key" \
-            --cache-location-used-path=$(results.build-reused-from-location.path) \
-            --working-dir=$(params.working-dir) \
-            --output-dir=$(params.output-dir) \
-            --debug=${DEBUG}
-        fi        
+        cache-build \
+          --cache-build=$(params.cache-build) \
+          --cache-build-key="$cache_build_key" \
+          --build-extra-inputs=$(params.build-extra-inputs) \
+          --cached-outputs=$(params.cached-outputs) \
+          --cache-location-used-path=$(results.build-reused-from-location.path) \
+          --working-dir=$(params.working-dir) \
+          --debug=${DEBUG}
       volumeMounts:
         - mountPath: /etc/ssl/certs/private-cert.pem
           name: private-cert

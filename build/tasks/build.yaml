@@ -74,14 +74,6 @@ spec:
         Path to the directory into which Gradle publishes its build.
       type: string
       default: build
-    - name: sonar-quality-gate
-      description: Whether the SonarQube quality gate needs to pass for the task to succeed.
-      type: string
-      default: "false"
-    - name: sonar-skip
-      description: Whether to skip SonarQube analysis or not.
-      type: string
-      default: "false"
   results:
     - description: The cache location that the build task used. If caching is not enabled this will be an empty string.
       name: build-reused-from-location
@@ -119,7 +111,6 @@ spec:
       resources:
         {}
       script: |
-        supply-sonar-project-properties-default --working-dir=$(params.working-dir)
         echo -n "" > $(results.build-reused-from-location.path)
         cache_build_key=gradle
         if copy-build-if-cached \
@@ -158,7 +149,7 @@ spec:
           name: private-cert
           readOnly: true
           subPath: tls.crt
-      workingDir: $(workspaces.source.path)   
+      workingDir: $(workspaces.source.path)
   volumes:
     - name: private-cert
       secret:
