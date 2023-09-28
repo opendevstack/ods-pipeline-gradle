@@ -35,6 +35,12 @@ tasks: ## Render tasks. Use VERSION=1.0.0 make tasks to render specific version.
 		-data Version=$(VERSION) \
 		-template build/tasks/build.yaml \
 		-destination tasks/build.yaml
+	go run github.com/opendevstack/ods-pipeline/cmd/taskmanifest \
+		-data ImageRepository=ghcr.io/opendevstack/ods-pipeline-gradle \
+		-data Version=$(VERSION) \
+		-data PostgresSidecar=true \
+		-template build/tasks/build.yaml \
+		-destination tasks/build-with-postgres.yaml
 .PHONY: tasks
 
 docs: tasks ## Render documentation for tasks.
@@ -42,6 +48,10 @@ docs: tasks ## Render documentation for tasks.
 		-task tasks/build.yaml \
 		-description build/docs/build.adoc \
 		-destination docs/build.adoc
+	go run github.com/opendevstack/ods-pipeline/cmd/taskdoc \
+		-task tasks/build-with-postgres.yaml \
+		-description build/docs/build.adoc \
+		-destination docs/build-with-postgres.adoc
 .PHONY: docs
 
 ##@ Testing

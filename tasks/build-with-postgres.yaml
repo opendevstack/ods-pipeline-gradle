@@ -1,12 +1,14 @@
+# File is generated; DO NOT EDIT.
+
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ods-pipeline-gradle-build{{- if .PostgresSidecar }}-with-postgres{{- end}}
+  name: ods-pipeline-gradle-build-with-postgres
 spec:
   description: |
     Builds Gradle applications and libraries.
 
-    See https://github.com/opendevstack/ods-pipeline-gradle/blob/v{{.Version}}/docs/tasks/build.adoc
+    See https://github.com/opendevstack/ods-pipeline-gradle/blob/vlatest/docs/tasks/build.adoc
   params:
     - name: working-dir
       description: |
@@ -74,7 +76,6 @@ spec:
         Path to the directory into which Gradle publishes its build.
       type: string
       default: build
-    {{- if .PostgresSidecar }}
     - name: postgres-image
       description: >-
         Container image to use for the PostgreSQL sidecar.
@@ -99,11 +100,9 @@ spec:
         that is created when the image is first started.
       type: string
       default: 'postgres'
-    {{- end }}
   results:
     - description: The cache location that the build task used. If caching is not enabled this will be an empty string.
       name: build-reused-from-location
-  {{- if .PostgresSidecar }}
   sidecars:
     - image: $(params.postgres-image)
       name: postgres-sidecar
@@ -114,11 +113,10 @@ spec:
           value: $(params.postgres-user)
         - name: POSTGRES_DB
           value: $(params.postgres-db)
-  {{- end }}
   steps:
     - name: build-gradle
       # Image is built from build/images/Dockerfile.gradle-toolset.
-      image: '{{.ImageRepository}}/gradle-toolset:{{.Version}}'
+      image: 'ghcr.io/opendevstack/ods-pipeline-gradle/gradle-toolset:latest'
       env:
         - name: DEBUG
           valueFrom:
