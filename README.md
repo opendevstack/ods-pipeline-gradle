@@ -1,5 +1,7 @@
 # ods-pipeline-gradle
 
+[![Tests](https://github.com/opendevstack/ods-pipeline-gradle/actions/workflows/main.yaml/badge.svg)](https://github.com/opendevstack/ods-pipeline-gradle/actions/workflows/main.yaml)
+
 Tekton task for use with [ODS Pipeline](https://github.com/opendevstack/ods-pipeline) to build Gradle applications and libraries.
 
 ## Usage
