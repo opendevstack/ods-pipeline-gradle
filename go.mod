@@ -3,7 +3,7 @@ module github.com/opendevstack/ods-pipeline-gradle
 go 1.19
 
 require (
-	github.com/opendevstack/ods-pipeline v0.13.3-0.20230908140043-a85ad6d67126
+	github.com/opendevstack/ods-pipeline v0.14.0-preview.1
 	github.com/tektoncd/pipeline v0.49.0
 )
 
@@ -43,7 +43,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/otiai10/copy v1.12.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.13.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect

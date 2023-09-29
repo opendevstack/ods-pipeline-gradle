@@ -34,17 +34,17 @@ VOLUME /workspace/source
 RUN git config --system --add safe.directory '/workspace/source'
 
 # Add scripts
-ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/master/build/package/scripts/cache-build.sh /usr/local/bin/cache-build
-ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/master/build/package/scripts/copy-build-if-cached.sh /usr/local/bin/copy-build-if-cached
-ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/master/build/package/scripts/copy-artifacts.sh /usr/local/bin/copy-artifacts
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/cache-build.sh /usr/local/bin/cache-build
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/copy-build-if-cached.sh /usr/local/bin/copy-build-if-cached
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/copy-artifacts.sh /usr/local/bin/copy-artifacts
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/configure-truststore.sh /usr/local/bin/configure-truststore
 COPY build/images/scripts/build.sh /usr/local/bin/build-gradle
 COPY build/images/scripts/configure-gradle.sh /usr/local/bin/configure-gradle
-COPY build/images/scripts/configure-truststore.sh /usr/local/bin/configure-truststore
-RUN chmod a+rx /usr/local/bin/build-gradle && \
-    chmod a+rx /usr/local/bin/cache-build && \
+RUN chmod a+rx /usr/local/bin/cache-build && \
     chmod a+rx /usr/local/bin/copy-build-if-cached && \
     chmod a+rx /usr/local/bin/copy-artifacts && \
-    chmod a+rx /usr/local/bin/configure-gradle && \
-    chmod a+rx /usr/local/bin/configure-truststore
+    chmod a+rx /usr/local/bin/configure-truststore && \
+    chmod a+rx /usr/local/bin/build-gradle && \
+    chmod a+rx /usr/local/bin/configure-gradle
 
 USER 1001
