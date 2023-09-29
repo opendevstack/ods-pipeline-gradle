@@ -8,7 +8,7 @@ spec:
   description: |
     Builds Gradle applications and libraries.
 
-    See https://github.com/opendevstack/ods-pipeline-gradle/blob/v0.1.0/docs/tasks/build.adoc
+    See https://github.com/opendevstack/ods-pipeline-gradle/blob/vlatest/docs/tasks/build.adoc
   params:
     - name: working-dir
       description: |
@@ -82,7 +82,7 @@ spec:
   steps:
     - name: build-gradle
       # Image is built from build/images/Dockerfile.gradle-toolset.
-      image: 'ghcr.io/opendevstack/ods-pipeline-gradle/gradle-toolset:0.1.0'
+      image: 'ghcr.io/opendevstack/ods-pipeline-gradle/gradle-toolset:latest'
       env:
         - name: DEBUG
           valueFrom:
