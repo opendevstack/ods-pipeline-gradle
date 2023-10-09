@@ -9,7 +9,7 @@ import (
 	ott "github.com/opendevstack/ods-pipeline/pkg/odstasktest"
 	"github.com/opendevstack/ods-pipeline/pkg/pipelinectxt"
 	ttr "github.com/opendevstack/ods-pipeline/pkg/tektontaskrun"
-	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
 )
 
 func TestBuildGradleTask(t *testing.T) {
