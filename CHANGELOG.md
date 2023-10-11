@@ -10,6 +10,12 @@ listed in the changelog.
 
 ## [Unreleased]
 
+## [0.2.1] - 2023-10-11
+
+### Changed
+
+- Expose Postgres env vars from sidecar in step as well ([#5](https://github.com/opendevstack/ods-pipeline-gradle/pull/5))
+
 ## [0.2.0] - 2023-10-09
 
 ### Changed
