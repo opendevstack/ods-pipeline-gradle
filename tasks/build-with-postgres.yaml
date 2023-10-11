@@ -144,6 +144,12 @@ spec:
             secretKeyRef:
               key: password
               name: ods-nexus-auth
+        - name: POSTGRES_PASSWORD
+          value: $(params.postgres-password)
+        - name: POSTGRES_USER
+          value: $(params.postgres-user)
+        - name: POSTGRES_DB
+          value: $(params.postgres-db)
       resources:
         {}
       script: |

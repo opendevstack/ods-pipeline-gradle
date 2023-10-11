@@ -13,7 +13,6 @@ import (
 var (
 	namespaceConfig *ttr.NamespaceConfig
 	rootPath        = "../.."
-	taskName        = "ods-pipeline-gradle-build"
 )
 
 func TestMain(m *testing.M) {
@@ -38,6 +37,12 @@ func testMain(m *testing.M) int {
 			filepath.Join(rootPath, "build/tasks/build.yaml"),
 			nil,
 		),
+		ttr.InstallTaskFromPath(
+			filepath.Join(rootPath, "build/tasks/build.yaml"),
+			map[string]string{
+				"PostgresSidecar": "true",
+			},
+		),
 	)
 	if err != nil {
 		log.Fatal("Could not setup temporary namespace: ", err)
@@ -45,11 +50,4 @@ func testMain(m *testing.M) int {
 	defer cleanup()
 	namespaceConfig = nc
 	return m.Run()
-}
-
-func runTask(opts ...ttr.TaskRunOpt) error {
-	return ttr.RunTask(append([]ttr.TaskRunOpt{
-		ttr.InNamespace(namespaceConfig.Name),
-		ttr.UsingTask(taskName),
-	}, opts...)...)
 }

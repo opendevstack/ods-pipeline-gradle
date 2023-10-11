@@ -13,7 +13,9 @@ import (
 )
 
 func TestBuildGradleTask(t *testing.T) {
-	if err := runTask(
+	if err := ttr.RunTask(
+		ttr.InNamespace(namespaceConfig.Name),
+		ttr.UsingTask("ods-pipeline-gradle-build"),
 		ttr.WithStringParams(map[string]string{
 			"cache-build": "false",
 		}),
@@ -38,6 +40,20 @@ func TestBuildGradleTask(t *testing.T) {
 			)
 
 		}),
+	); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestBuildGradleWithPostgresTask(t *testing.T) {
+	if err := ttr.RunTask(
+		ttr.InNamespace(namespaceConfig.Name),
+		ttr.UsingTask("ods-pipeline-gradle-build-with-postgres"),
+		ttr.WithStringParams(map[string]string{
+			"cache-build":       "false",
+			"postgres-password": "s3cr3t",
+		}),
+		ott.WithGitSourceWorkspace(t, "../testdata/workspaces/gradle-sample-app", namespaceConfig.Name),
 	); err != nil {
 		t.Fatal(err)
 	}
