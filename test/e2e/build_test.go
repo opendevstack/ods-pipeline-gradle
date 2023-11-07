@@ -26,8 +26,7 @@ func TestBuildGradleTask(t *testing.T) {
 			ott.AssertFilesExist(t, wd,
 				"docker/Dockerfile",
 				"docker/app.jar",
-				filepath.Join(pipelinectxt.XUnitReportsPath, "TEST-ods.java.gradle.sample.app.AppTest.xml"),
-				filepath.Join(pipelinectxt.XUnitReportsPath, "TEST-ods.java.gradle.sample.app.AppTest2.xml"),
+				filepath.Join(pipelinectxt.XUnitReportsPath, "test-results.xml"),
 				filepath.Join(pipelinectxt.CodeCoveragesPath, "coverage.xml"),
 			)
 
