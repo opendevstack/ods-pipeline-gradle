@@ -10,6 +10,8 @@ listed in the changelog.
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-11-08
+
 ### Changed
 
 - Create single JUnit XML file, and store only this combined file as an artifact ([#6](https://github.com/opendevstack/ods-pipeline-gradle/issues/6))
