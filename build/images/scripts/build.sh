@@ -86,7 +86,7 @@ if [ -d "${unit_test_result_dir}" ]; then
     mkdir -p "${unit_test_artifacts_dir}"
     # Each test class produces its own report file.
     # Combine all into one file to reduce clutter.
-    combine-junit-testsuites -junit-glob="${unit_test_result_dir}/*.xml" > "${unit_test_artifacts_dir}/${artifact_prefix}test-results.xml"
+    combine-junit-testsuites -files="${unit_test_result_dir}/*.xml" > "${unit_test_artifacts_dir}/${artifact_prefix}test-results.xml"
 else
   echo "Build failed: no unit test results found in ${unit_test_result_dir}"
   exit 1
