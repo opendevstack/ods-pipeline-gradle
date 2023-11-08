@@ -84,10 +84,9 @@ unit_test_result_dir="${gradle_build_dir}/test-results/test"
 if [ -d "${unit_test_result_dir}" ]; then
     unit_test_artifacts_dir="${tmp_artifacts_dir}/xunit-reports"
     mkdir -p "${unit_test_artifacts_dir}"
-    # Each test class produces its own report file, but they contain a fully qualified class
-    # name in their file name. Due to that, we do not need to add an artifact prefix to
-    # distinguish them with reports from other artifacts of the same repo/pipeline build.
-    "$CP" "${unit_test_result_dir}/"*.xml "${unit_test_artifacts_dir}"
+    # Each test class produces its own report file.
+    # Combine all into one file to reduce clutter.
+    combine-junit-testsuites -files="${unit_test_result_dir}/*.xml" > "${unit_test_artifacts_dir}/${artifact_prefix}test-results.xml"
 else
   echo "Build failed: no unit test results found in ${unit_test_result_dir}"
   exit 1

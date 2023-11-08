@@ -1,5 +1,7 @@
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.13
 
+ARG TARGETARCH
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV GIT_VERSION=2.39 \
@@ -38,6 +40,7 @@ ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.
 ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/copy-build-if-cached.sh /usr/local/bin/copy-build-if-cached
 ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/copy-artifacts.sh /usr/local/bin/copy-artifacts
 ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0-preview.1/build/images/scripts/configure-truststore.sh /usr/local/bin/configure-truststore
+ADD https://github.com/opendevstack/junit-testsuites/releases/download/v0.2.0/combine-junit-testsuites-linux-${TARGETARCH} /usr/local/bin/combine-junit-testsuites
 COPY build/images/scripts/build.sh /usr/local/bin/build-gradle
 COPY build/images/scripts/configure-gradle.sh /usr/local/bin/configure-gradle
 RUN chmod a+rx /usr/local/bin/cache-build && \
@@ -45,6 +48,7 @@ RUN chmod a+rx /usr/local/bin/cache-build && \
     chmod a+rx /usr/local/bin/copy-artifacts && \
     chmod a+rx /usr/local/bin/configure-truststore && \
     chmod a+rx /usr/local/bin/build-gradle && \
-    chmod a+rx /usr/local/bin/configure-gradle
+    chmod a+rx /usr/local/bin/configure-gradle && \
+    chmod a+rx /usr/local/bin/combine-junit-testsuites
 
 USER 1001
